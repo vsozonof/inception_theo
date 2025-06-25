@@ -18,9 +18,9 @@ services:
     build: ./requirement/wordpress
     container_name: wordpress
     depends_on:
-    - mariadb
+     - mariadb
     volumes:
-      - wordpress:/var/www/html
+     - wordpress:/var/www/wordpress
     environment:
       WP_URL: ${WP_URL}
       WP_TITLE: ${WP_TITLE}
@@ -30,9 +30,15 @@ services:
       WP_USR2: ${WP_USR2}
       WP_MAIL2: ${WP_MAIL2}
       WP_PASS2: ${WP_PASS2}
+      SQL_DB: ${SQL_DB}
+      SQL_USR: ${SQL_USR}
+      SQL_PASS: ${SQL_PASS}
+      SQL_ROOTPASS: ${SQL_ROOTPASS}
     networks:
     - inception
     restart: always
+    expose:
+    - "9000"
 
 ## OK
   nginx:
@@ -41,7 +47,7 @@ services:
     depends_on:
     - wordpress
     volumes:
-    - wordpress:/var/www/html
+    - wordpress:/var/www/wordpress
     ports:
     - "443:443"
     networks:
