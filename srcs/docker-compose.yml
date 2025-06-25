@@ -1,0 +1,70 @@
+services:
+  mariadb:
+    build: ./requirement/mariadb
+    container_name: mariadb
+    volumes:
+    - mariadb:/var/lib/mysql
+    networks:
+    - inception
+    environment:
+      SQL_DB: ${SQL_DB}
+      SQL_USR: ${SQL_USR}
+      SQL_PASS: ${SQL_PASS}
+      SQL_ROOTPASS: ${SQL_ROOTPASS}
+    restart: always
+
+
+  wordpress:
+    build: ./requirement/wordpress
+    container_name: wordpress
+    depends_on:
+    - mariadb
+    volumes:
+      - wordpress:/var/www/html
+    environment:
+      WP_URL: ${WP_URL}
+      WP_TITLE: ${WP_TITLE}
+      WP_MAIL: ${WP_MAIL}
+      WP_USR: ${WP_USR}
+      WP_PASS: ${WP_PASS}
+      WP_USR2: ${WP_USR2}
+      WP_MAIL2: ${WP_MAIL2}
+      WP_PASS2: ${WP_PASS2}
+    networks:
+    - inception
+    restart: always
+
+## OK
+  nginx:
+    build: ./requirement/nginx
+    container_name: nginx
+    depends_on:
+    - wordpress
+    volumes:
+    - wordpress:/var/www/html
+    ports:
+    - "443:443"
+    networks:
+    - inception
+    restart: always
+
+## OK
+volumes:
+  wordpress:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: /home/tpotilli/data/wordpress
+
+  mariadb:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: /home/tpotilli/data/mariadb
+
+## OK
+networks:
+  inception:
+    driver: bridge
